@@ -13,13 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.forecast.bean.TempBean;
 import com.forecast.service.ForecastService;
 
+
 @RestController
 public class ForecastController {
 
 	@Autowired
 	ForecastService myForecastService;
 
-	@GetMapping("/forecast/{city}")
+	@GetMapping("/api/forecast/v1/{city}")
 	public Response getForecast(@PathVariable String city) {
 		String[] citys = city.split(",");
 		List<TempBean> list = new ArrayList<>();
