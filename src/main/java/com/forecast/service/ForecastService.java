@@ -108,7 +108,7 @@ public class ForecastService {
 		}
 		return signature;
 	}
-	
+
 	private TempBean getResponse(String city,String signature)
 	{
         String authorizationLine = "OAuth " +
@@ -138,36 +138,39 @@ public class ForecastService {
 			if (response != null && response.getStatusLine().getStatusCode() == 200) {
 				String res = EntityUtils.toString(response.getEntity());
 				JSONObject jsonObj = new JSONObject(res);
-				city = (String) ((JSONObject) (jsonObj.get("location"))).get("city");
-				String country = (String) ((JSONObject) (jsonObj.get("location"))).get("country");
-				JSONArray jsonArray = ((JSONArray) (jsonObj.getJSONArray("forecasts")));
-				jsonObj = (JSONObject) jsonArray.get(1);
-				String day = (String) jsonObj.get("day");
-				Integer low = (Integer) jsonObj.get("low");
-				Integer high = (Integer) jsonObj.get("high");
-				long d = ((Integer) jsonObj.get("date")).longValue()*1000;
-				Date now = new Date(d);
-				Instant current = now.toInstant(); 
-				LocalDateTime ldt = LocalDateTime.ofInstant(current, ZoneId.systemDefault()); 
-				String text = (String) jsonObj.get("text");
-				Temperature temp = new Temperature();
-				temp.setCity(city);
-				temp.setCountry(country);
-				temp.setDay(day);
-				temp.setText(text);
-				temp.setLow(low);
-				temp.setHigh(high);
-				temp.setDate(ldt);
-				myTempratureRepository.save(temp);
-				TempBean tempBean = new TempBean();
-				tempBean.setCity(city);
-				tempBean.setCountry(country);
-				tempBean.setDayoftheweek(day);
-				tempBean.setLowtemperature(low);
-				tempBean.setHightemperature(high);
-				tempBean.setWeather(text);
-				tempBean.setDate(ldt.toString());
-				return tempBean;
+				JSONObject j = (JSONObject) (jsonObj.get("location"));
+				if (j.has("city")) {
+					city = (String) j.get("city");
+					String country = (String) j.get("country");
+					JSONArray jsonArray = ((JSONArray) (jsonObj.getJSONArray("forecasts")));
+					jsonObj = (JSONObject) jsonArray.get(1);
+					String day = (String) jsonObj.get("day");
+					Integer low = (Integer) jsonObj.get("low");
+					Integer high = (Integer) jsonObj.get("high");
+					long d = ((Integer) jsonObj.get("date")).longValue() * 1000;
+					Date now = new Date(d);
+					Instant current = now.toInstant();
+					LocalDateTime ldt = LocalDateTime.ofInstant(current, ZoneId.systemDefault());
+					String text = (String) jsonObj.get("text");
+					Temperature temp = new Temperature();
+					temp.setCity(city);
+					temp.setCountry(country);
+					temp.setDay(day);
+					temp.setText(text);
+					temp.setLow(low);
+					temp.setHigh(high);
+					temp.setDate(ldt);
+					myTempratureRepository.save(temp);
+					TempBean tempBean = new TempBean();
+					tempBean.setCity(city);
+					tempBean.setCountry(country);
+					tempBean.setDayoftheweek(day);
+					tempBean.setLowtemperature(low);
+					tempBean.setHightemperature(high);
+					tempBean.setWeather(text);
+					tempBean.setDate(ldt.toString());
+					return tempBean;
+				}
 			}
 		} catch (ParseException | IOException e) {
 			e.printStackTrace();
